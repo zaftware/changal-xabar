@@ -1,7 +1,35 @@
 <!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Changal 24</title>
-<style>body{font-family:Inter,system-ui;background:#0b0f14;color:#e9eef5;max-width:860px;margin:20px auto;padding:0 14px}a{color:#7cc4ff}.card{border:1px solid #1d2633;border-radius:12px;padding:14px;margin:10px 0;background:#111722}.muted{color:#90a0b5;font-size:12px}</style></head>
-<body><h1>🦞 Changal 24</h1><div id="list"></div>
+<style>body{font-family:Inter,system-ui;background:#0b0f14;color:#e9eef5;max-width:860px;margin:20px auto;padding:0 14px}a{color:#7cc4ff}.card{border:1px solid #1d2633;border-radius:12px;padding:14px;margin:10px 0;background:#111722}.muted{color:#90a0b5;font-size:12px}textarea,input,button{background:#101521;color:#e9eef5;border:1px solid #1d2633;border-radius:10px;padding:10px}button{cursor:pointer}</style></head>
+<body><h1>🦞 Changal 24</h1>
+
+<div class='card'>
+  <div><b>Admin</b> <span class='muted'>(kanalga post qilish)</span></div>
+  <p class='muted'>Admin token kiriting (CHANGAL_ADMIN_TOKEN)</p>
+  <input id='token' placeholder='Admin token' style='width:100%;margin:6px 0'/>
+  <div style='display:flex;gap:8px;flex-wrap:wrap;margin:8px 0'>
+    <button onclick='publishNow()'>Publish now</button>
+  </div>
+  <textarea id='customText' rows='4' style='width:100%' placeholder='Kanalga custom post matni'></textarea>
+  <div style='margin-top:8px'><button onclick='postCustom()'>Post custom</button></div>
+  <p id='status' class='muted'></p>
+</div>
+
+<div id="list"></div>
 <script>
+function adminHeaders(){
+  return {'content-type':'application/json','x-admin-token':document.getElementById('token').value.trim()}
+}
+async function publishNow(){
+  const r = await fetch('/api/publish-now',{method:'POST',headers:adminHeaders()});
+  const j = await r.json().catch(()=>({}));
+  document.getElementById('status').textContent = r.ok ? 'OK: '+(j.output||'published') : 'ERR: '+(j.error||r.status);
+}
+async function postCustom(){
+  const text = document.getElementById('customText').value.trim();
+  const r = await fetch('/api/post-custom',{method:'POST',headers:adminHeaders(),body:JSON.stringify({text})});
+  const j = await r.json().catch(()=>({}));
+  document.getElementById('status').textContent = r.ok ? 'OK: '+(j.output||'sent') : 'ERR: '+(j.error||r.status);
+}
 fetch('/api/news').then(r=>r.json()).then(rows=>{
   document.getElementById('list').innerHTML = rows.map(x=>`
     <div class='card'>
