@@ -2,5 +2,13 @@
 <style>body{font-family:Inter,system-ui;background:#0b0f14;color:#e9eef5;max-width:860px;margin:20px auto;padding:0 14px}a{color:#7cc4ff}.card{border:1px solid #1d2633;border-radius:12px;padding:14px;margin:10px 0;background:#111722}.muted{color:#90a0b5;font-size:12px}</style></head>
 <body><h1>🦞 Changal Xabar</h1><div id="list"></div>
 <script>
-fetch('/api/news').then(r=>r.json()).then(rows=>{document.getElementById('list').innerHTML=rows.map(x=>`<div class='card'><div><b>${x.title||''}</b></div><div class='muted'>${x.source} · score ${Math.round(x.score||0)}</div><p>${x.tldr_uz||'TL;DR tayyorlanmoqda...'}</p><a href='${x.url}' target='_blank'>Manba</a></div>`).join('')})
+fetch('/api/news').then(r=>r.json()).then(rows=>{
+  document.getElementById('list').innerHTML = rows.map(x=>`
+    <div class='card'>
+      <div><b>${x.title_uz || x.title || ''}</b></div>
+      <div class='muted'>score ${Math.round(x.score||0)}</div>
+      <p>${x.tldr_uz||'TL;DR tayyorlanmoqda...'}</p>
+      <a href='/news/${x.id}'>Batafsil</a> · <a href='${x.url}' target='_blank'>Asl manba</a>
+    </div>`).join('')
+})
 </script></body></html>
