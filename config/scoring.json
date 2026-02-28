@@ -1,0 +1,66 @@
+{
+  "weights": {
+    "source": 25,
+    "freshness": 25,
+    "aiKeywords": 30,
+    "techKeywords": 10,
+    "bodyLength": 10
+  },
+  "sourceWeights": {
+    "telegram_s": 1
+  },
+  "freshnessWindowHours": 72,
+  "aiKeywords": [
+    "ai",
+    "artificial intelligence",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "gemini",
+    "llm",
+    "model",
+    "inference",
+    "agent",
+    "agents",
+    "deepseek",
+    "mistral",
+    "perplexity",
+    "cursor",
+    "copilot"
+  ],
+  "techKeywords": [
+    "software",
+    "developer",
+    "api",
+    "cloud",
+    "security",
+    "cybersecurity",
+    "chip",
+    "gpu",
+    "launch",
+    "release"
+  ],
+  "excludedKeywords": [
+    "election",
+    "senate",
+    "president",
+    "war",
+    "military",
+    "crime",
+    "murder",
+    "arrest",
+    "police",
+    "court"
+  ],
+  "politicalKeywords": [
+    "government",
+    "minister",
+    "congress",
+    "parliament",
+    "sanction",
+    "campaign",
+    "politics",
+    "political"
+  ]
+}
