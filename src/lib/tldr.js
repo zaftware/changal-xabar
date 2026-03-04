@@ -1,44 +1,40 @@
 import { execFileSync } from 'node:child_process';
 
-const BAD_FALLBACK_RE = /Qisqa:\s*manba yangiligini tekshirib ko'ring\.?/i;
 const CLAUDE_BIN = '/home/zaff/.local/bin/claude';
 
 function cleanText(s = '') {
-  return String(s)
-    .replace(/\s+/g, ' ')
-    .replace(/\b(Score:\s*\d+[^\)]*\)|Comments?:\s*\S+|Link:\s*\S+)\b/gi, '')
-    .trim();
+  return String(s).replace(/\s+/g, ' ').trim();
 }
 
 function bulletCount(s = '') {
   return (String(s).match(/^\s*–\s+/gm) || []).length;
 }
 
-function extractJsonText(s = '') {
-  const text = String(s).trim();
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-  return (fenced?.[1] || text).trim();
-}
+function parsePost(text = '') {
+  const trimmed = (text || '').trim();
+  const lines = trimmed.split('\n');
 
-function bulletLines(s = '') {
-  return String(s).split('\n').map((l) => l.trim()).filter((l) => l.startsWith('– '));
-}
+  // First line must be "Source: Title"
+  const firstLine = lines[0] || '';
+  const colonIdx = firstLine.indexOf(':');
+  if (colonIdx < 0) return null;
+  const title_uz = firstLine.slice(colonIdx + 1).trim();
 
-function normalizeOutput(parsed) {
-  const body = String(parsed?.body_uz || '').trim();
-  const tldr = String(parsed?.tldr_uz || '').trim();
-  const normalizedTldr = bulletCount(tldr) >= 3 ? tldr : (bulletCount(body) >= 3 ? body : tldr);
-  const out = {
-    title_uz: cleanText(parsed?.title_uz || ''),
-    body_uz: cleanText(body),
-    tldr_uz: normalizedTldr,
-    is_political: !!parsed?.is_political,
+  // Body: everything after first line, stripped of trailing "Changal24"
+  const body = lines.slice(1).join('\n').trim().replace(/\n*Changal24\s*$/i, '').trim();
+
+  if (body.length < 60 || bulletCount(body) < 3) return null;
+
+  // Extract one-sentence description (text before first bullet)
+  const bulletStart = body.search(/^–\s+/m);
+  const body_uz = bulletStart > 0 ? cleanText(body.slice(0, bulletStart)) : '';
+
+  return {
+    title_uz: cleanText(title_uz),
+    body_uz,
+    tldr_uz: body,
+    is_political: false,
   };
-
-  if (!out.tldr_uz || BAD_FALLBACK_RE.test(out.tldr_uz)) return null;
-  if (out.tldr_uz.length < 120 || bulletCount(out.tldr_uz) < 3) return null;
-  if (bulletLines(out.tldr_uz).some((l) => l.length > 72)) return null;
-  return out;
 }
 
 function callClaude(prompt, model) {
@@ -50,34 +46,121 @@ function callClaude(prompt, model) {
     env: { ...process.env, CLAUDECODE: undefined },
   });
   const envelope = JSON.parse(raw);
-  const txt = extractJsonText(envelope?.result || '');
-  return normalizeOutput(JSON.parse(txt));
+  return parsePost((envelope?.result || '').trim());
 }
 
-export async function localizeNews({ title = '', body = '' }) {
+export async function localizeNews({ title = '', body = '', url = '' }) {
   const model = process.env.CLAUDE_MODEL || 'sonnet';
 
-  const prompt = `
-Vazifa:
-- Kiruvchi AI/tech yangilik matnini uzbek lotiniga tarjima qil.
-- Sarlavhani ham tarjima qil.
-- ftsec uslubiga yaqin qisqa format qil.
-- Siyosiy kontent bo'lsa is_political=true qilib qaytar.
+  const prompt = `You write posts for a Telegram technology feed called Changal24.
 
-Qoidalar:
-- Faqat faktlar, hech qanday tarafkashlik yo'q.
-- Mualliflik huquqini buzmaslik uchun matnni qayta ifodalab yoz (copy-paste yo'q).
-- Faqat bitta JSON obyekt qaytar. Markdown, izoh, code fence bo'lmasin.
-- body_uz: 1-3 ta qisqa gapdan iborat oddiy paragraf bo'lsin. Punkt ishlatma.
-- tldr_uz: ko'p qatorli matn bo'lsin.
-- tldr_uz ning 1-qatori juda qisqa lead bo'lsin. 60 belgidan oshmasin.
-- tldr_uz ichida kamida 6 ta punkt bo'lsin.
-- Har punkt yangi qatorda va aynan "– " bilan boshlansin.
-- Natija sxemasi aniq shu bo'lsin: {"title_uz":"...","body_uz":"...","tldr_uz":"lead\\n– punkt 1\\n– punkt 2","is_political":false}
+Your task: convert a technology news item, article, tweet, HackerNews post, GitHub project, or announcement into a very concise Telegram TL;DR post.
 
-Sarlavha: ${title}
-Matn: ${body.slice(0, 6000)}
-`;
+Audience: developers, AI enthusiasts, startup founders.
+
+Language: Uzbek (latin).
+
+Goal: the reader must understand the news in 5–10 seconds.
+The post must fit roughly one iPhone screen.
+
+--------------------------------
+
+STRICT OUTPUT FORMAT (must always follow):
+
+source: title
+
+One short sentence explaining what the thing/news is.
+
+– fact
+– fact
+– fact
+– fact
+– fact
+
+Changal24
+
+--------------------------------
+
+RULES
+
+1. The first line MUST always be exactly:
+source: title
+
+Examples of source names:
+HN, GitHub, Blog, Paper, X, Reddit, Company, Docs.
+
+Example:
+HN: New Rust package manager released
+
+2. The title must summarize the news clearly and neutrally.
+
+3. The second line explains in one short sentence what the project/news is.
+
+4. Then write 4–6 bullet points with key facts.
+
+5. Bullet points must be:
+– short
+– factual
+– easy to scan
+– preferably under ~10 words.
+
+6. Focus on concrete information, such as:
+– what it is
+– what problem it solves
+– who built it
+– key features
+– notable numbers (stars, users, funding, votes)
+– release or milestone
+
+7. Remove fluff, hype, and marketing language.
+
+8. Do NOT repeat the same information across bullets.
+
+9. Do NOT write long sentences or paragraphs.
+
+10. No emojis.
+
+11. Maximum 6 bullets.
+
+12. Always end the post with exactly:
+
+Changal24
+
+13. Output ONLY the final Telegram post.
+
+--------------------------------
+
+CONTENT EXTRACTION STRATEGY
+
+When given an article, tweet, or link:
+
+1. Identify the main thing (project, release, research, tool, news).
+2. Extract the 5 most important facts.
+3. Prefer objective information over opinions.
+4. Remove background history unless essential.
+5. Compress wording to make it Telegram-scannable.
+
+--------------------------------
+
+EXAMPLE OUTPUT
+
+HN: /e/OS — deGoogled Android
+
+/e/OS — Google servislarisiz ishlaydigan ochiq manbali Android tizimi.
+
+– LineageOS asosida yaratilgan
+– Google servislarisiz ishlaydi
+– Kuzatuv va telemetry olib tashlangan
+– Maxfiylik ilovalari bilan keladi
+– e.foundation tomonidan rivojlantiriladi
+
+Changal24
+
+--------------------------------
+
+URL: ${url}
+Title: ${title}
+Content: ${body.slice(0, 6000)}`;
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {

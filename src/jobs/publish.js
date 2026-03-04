@@ -58,7 +58,7 @@ if (!row) {
   process.exit(0);
 }
 
-const loc = await localizeNews({ title: row.title, body: row.body });
+const loc = await localizeNews({ title: row.title, body: row.body, url: row.url || '' });
 
 if (!loc) {
   db.prepare(`UPDATE posts SET published_to_tg=-2 WHERE id=?`).run(row.id);
