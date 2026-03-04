@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 
-const BAD_FALLBACK_RE = /Qisqa:\s*manba yangiligini tekshirib ko‘ring\.?/i;
+const BAD_FALLBACK_RE = /Qisqa:\s*manba yangiligini tekshirib ko'ring\.?/i;
+const CLAUDE_BIN = '/home/zaff/.local/bin/claude';
 
 function cleanText(s = '') {
   return String(s)
@@ -11,13 +12,6 @@ function cleanText(s = '') {
 
 function bulletCount(s = '') {
   return (String(s).match(/^\s*–\s+/gm) || []).length;
-}
-
-function bulletLines(s = '') {
-  return String(s)
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith('– '));
 }
 
 function extractJsonText(s = '') {
@@ -37,12 +31,23 @@ function normalizeOutput(parsed) {
     is_political: !!parsed?.is_political,
   };
 
-  const bullets = bulletCount(out.tldr_uz);
-  const bulletTooLong = bulletLines(out.tldr_uz).some((line) => line.length > 72);
-  if (!out.tldr_uz || BAD_FALLBACK_RE.test(out.tldr_uz) || out.tldr_uz.length < 120 || bullets < 3 || bulletTooLong) {
+  if (!out.tldr_uz || BAD_FALLBACK_RE.test(out.tldr_uz) || out.tldr_uz.length < 120 || bulletCount(out.tldr_uz) < 3) {
     return null;
   }
   return out;
+}
+
+function callClaude(prompt, model) {
+  const args = ['--print', '--output-format', 'json', '--permission-mode', 'bypassPermissions', '--model', model];
+  const raw = execFileSync(CLAUDE_BIN, args, {
+    input: prompt,
+    encoding: 'utf8',
+    maxBuffer: 1024 * 1024 * 8,
+    env: { ...process.env, CLAUDECODE: undefined },
+  });
+  const envelope = JSON.parse(raw);
+  const txt = extractJsonText(envelope?.result || '');
+  return normalizeOutput(JSON.parse(txt));
 }
 
 export async function localizeNews({ title = '', body = '' }) {
@@ -64,30 +69,20 @@ Qoidalar:
 - tldr_uz ning 1-qatori juda qisqa lead bo'lsin. 60 belgidan oshmasin.
 - tldr_uz ichida kamida 6 ta punkt bo'lsin.
 - Har punkt yangi qatorda va aynan "– " bilan boshlansin.
-- Har punkt juda qisqa bo'lsin: ideal 6-10 so'z, maksimum 72 belgi.
-- Maqsad: iPhone 14 Pro ekranida har punkt taxminan 1-1.5 qator bo'lsin, 2 qatordan oshmasin.
 - Natija sxemasi aniq shu bo'lsin: {"title_uz":"...","body_uz":"...","tldr_uz":"lead\\n– punkt 1\\n– punkt 2","is_political":false}
 
 Sarlavha: ${title}
 Matn: ${body.slice(0, 6000)}
 `;
 
-  try {
-    const args = ['--print', '--output-format', 'json', '--permission-mode', 'bypassPermissions', '--model', model];
-    const raw = execFileSync('claude', args, {
-      input: prompt,
-      encoding: 'utf8',
-      maxBuffer: 1024 * 1024 * 8,
-    });
-    const envelope = JSON.parse(raw);
-    const txt = extractJsonText(envelope?.result || '');
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const parsed = JSON.parse(txt);
-      return normalizeOutput(parsed);
-    } catch {
-      return null;
+      const result = callClaude(prompt, model);
+      if (result) return result;
+      console.log(`tldr_attempt_${attempt}_bad_format`);
+    } catch (err) {
+      console.log(`tldr_attempt_${attempt}_error`, err?.message?.slice(0, 80));
     }
-  } catch {
-    return null;
   }
+  return null;
 }
