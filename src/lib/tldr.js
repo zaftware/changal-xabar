@@ -20,10 +20,14 @@ function extractJsonText(s = '') {
   return (fenced?.[1] || text).trim();
 }
 
+function bulletLines(s = '') {
+  return String(s).split('\n').map((l) => l.trim()).filter((l) => l.startsWith('– '));
+}
+
 function normalizeOutput(parsed) {
   const body = String(parsed?.body_uz || '').trim();
   const tldr = String(parsed?.tldr_uz || '').trim();
-  const normalizedTldr = bulletCount(tldr) >= 1 ? tldr : (bulletCount(body) >= 1 ? body : tldr);
+  const normalizedTldr = bulletCount(tldr) >= 3 ? tldr : (bulletCount(body) >= 3 ? body : tldr);
   const out = {
     title_uz: cleanText(parsed?.title_uz || ''),
     body_uz: cleanText(body),
@@ -32,6 +36,8 @@ function normalizeOutput(parsed) {
   };
 
   if (!out.tldr_uz || BAD_FALLBACK_RE.test(out.tldr_uz)) return null;
+  if (out.tldr_uz.length < 120 || bulletCount(out.tldr_uz) < 3) return null;
+  if (bulletLines(out.tldr_uz).some((l) => l.length > 72)) return null;
   return out;
 }
 
