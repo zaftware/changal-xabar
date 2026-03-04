@@ -1,4 +1,5 @@
 import 'dotenv/config';
+// deploy-test: tiny no-op comment to verify Coolify auto-deploy webhook
 import db from '../lib/db.js';
 import { localizeNews } from '../lib/tldr.js';
 import { execFileSync } from 'node:child_process';
