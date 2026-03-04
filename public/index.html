@@ -6,84 +6,71 @@
 <title>Changal 24</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:#0b0f14;color:#e9eef5;max-width:680px;margin:0 auto;padding:0 14px 40px}
-a{color:#7cc4ff;text-decoration:none}
+body{font-family:Inter,system-ui,sans-serif;background:#17212b;color:#d1dbe8;max-width:600px;margin:0 auto;padding:0 10px 40px}
+a{color:#71afe5;text-decoration:none}
 a:hover{text-decoration:underline}
 
-header{display:flex;align-items:center;justify-content:space-between;padding:18px 0 14px;border-bottom:1px solid #1d2633;margin-bottom:16px}
-header h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
-header .tg-link{font-size:13px;color:#90a0b5}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 2px 12px;margin-bottom:6px}
+header h1{font-size:17px;font-weight:700;color:#fff}
+header .tg-link{font-size:13px;color:#71afe5}
 
-.card{border:1px solid #1d2633;border-radius:12px;padding:14px 16px;margin-bottom:10px;background:#111722}
-.card-meta{font-size:12px;color:#90a0b5;margin-bottom:6px}
-.card-title{font-size:15px;font-weight:600;margin-bottom:8px;line-height:1.35}
-.card-lead{font-size:14px;color:#c8d6e5;margin-bottom:8px;font-style:italic}
-.card-bullets{font-size:14px;line-height:1.6;color:#dde6f0}
-.card-bullets div{padding:1px 0}
-.card-footer{margin-top:10px;font-size:12px;color:#90a0b5}
+/* message bubble – mirrors Telegram dark theme */
+.msg{background:#1e2c3a;border-radius:12px;padding:12px 14px;margin-bottom:6px;font-size:14.5px;line-height:1.55}
+.msg-head{margin-bottom:6px}
+.msg-head .src{color:#71afe5;font-weight:500}
+.msg-body{color:#d1dbe8;white-space:pre-wrap;word-break:break-word}
+.msg-foot{margin-top:8px;font-size:12px;color:#71afe5;display:flex;align-items:center;gap:10px}
+.msg-foot .date{color:#6d7f8e;margin-left:auto}
+.empty{color:#6d7f8e;font-size:14px;padding:20px 4px}
 
 /* admin */
-#admin-toggle-bar{padding:10px 0;margin-bottom:4px;display:flex;align-items:center;gap:10px}
-#admin-toggle-bar input{flex:1;background:#101521;color:#e9eef5;border:1px solid #1d2633;border-radius:8px;padding:8px 10px;font-size:13px}
-#admin-toggle-bar button{background:#1a2535;color:#7cc4ff;border:1px solid #1d2633;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;white-space:nowrap}
-#admin-toggle-bar button:hover{background:#1f2f45}
+#admin-bar{padding:8px 0 6px;display:flex;gap:8px;margin-bottom:2px}
+#admin-bar input{flex:1;background:#1e2c3a;color:#d1dbe8;border:1px solid #2b3f52;border-radius:8px;padding:8px 10px;font-size:13px}
+#admin-bar button{background:#2b3f52;color:#71afe5;border:1px solid #2b3f52;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px;white-space:nowrap}
+#admin-bar button:hover{background:#354d63}
 
-#admin-panel{display:none;margin-bottom:20px}
-#admin-panel .section-title{font-size:13px;font-weight:600;color:#90a0b5;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px}
+#admin-panel{display:none;margin-bottom:14px;border:1px solid #2b3f52;border-radius:10px;padding:12px 14px;background:#1a2533}
+#admin-panel .adm-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+#admin-panel button{background:#2b3f52;color:#d1dbe8;border:1px solid #364f65;border-radius:8px;padding:7px 13px;cursor:pointer;font-size:13px}
+#admin-panel button:hover{background:#354d63}
+#admin-panel button.primary{color:#71afe5}
+#custom-text{width:100%;background:#131e28;color:#d1dbe8;border:1px solid #2b3f52;border-radius:8px;padding:9px 10px;font-size:13px;resize:vertical;margin-bottom:7px;font-family:inherit}
+#status{font-size:12px;color:#6d7f8e;min-height:16px;margin:4px 0 8px}
 
-.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.admin-actions button,.action-btn{background:#101521;color:#e9eef5;border:1px solid #1d2633;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px}
-.admin-actions button:hover,.action-btn:hover{background:#1a2535}
-.action-btn.primary{color:#7cc4ff;border-color:#2a4060}
-.action-btn.primary:hover{background:#162030}
-
-#custom-text{width:100%;background:#101521;color:#e9eef5;border:1px solid #1d2633;border-radius:8px;padding:10px;font-size:13px;resize:vertical;margin-bottom:8px;font-family:inherit}
-#status{font-size:12px;color:#90a0b5;min-height:18px;margin:6px 0 14px}
-
-.pending-card{border:1px solid #1d2633;border-radius:10px;padding:12px 14px;margin-bottom:8px;background:#0d1520;display:flex;gap:12px;align-items:flex-start}
-.pending-card .info{flex:1;min-width:0}
-.pending-card .info .p-title{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
-.pending-card .info .p-meta{font-size:12px;color:#90a0b5}
-.pending-card .pub-btn{flex-shrink:0;background:#162030;color:#7cc4ff;border:1px solid #2a4060;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:12px;white-space:nowrap}
-.pending-card .pub-btn:hover{background:#1e3048}
-.pending-card .pub-btn:disabled{opacity:.5;cursor:default}
-
-#feed-title{font-size:13px;font-weight:600;color:#90a0b5;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px}
-#list .empty{color:#90a0b5;font-size:14px;padding:20px 0}
+.p-section{font-size:12px;color:#6d7f8e;letter-spacing:.4px;text-transform:uppercase;margin:8px 0 6px}
+.pending-row{background:#1e2c3a;border-radius:8px;padding:10px 12px;margin-bottom:5px;display:flex;gap:10px;align-items:center}
+.pending-row .pr-info{flex:1;min-width:0}
+.pending-row .pr-title{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;color:#d1dbe8}
+.pending-row .pr-meta{font-size:11px;color:#6d7f8e}
+.pending-row .pub-btn{flex-shrink:0;background:#213040;color:#71afe5;border:1px solid #2b4560;border-radius:7px;padding:6px 11px;cursor:pointer;font-size:12px;white-space:nowrap}
+.pending-row .pub-btn:hover{background:#28405a}
+.pending-row .pub-btn:disabled{opacity:.45;cursor:default}
 </style>
 </head>
 <body>
 
 <header>
   <h1>🦞 Changal 24</h1>
-  <a class="tg-link" href="https://t.me/changal_24" target="_blank">Telegram →</a>
+  <a class="tg-link" href="https://t.me/changal_24" target="_blank">Telegram kanalga →</a>
 </header>
 
-<!-- Admin toggle -->
-<div id="admin-toggle-bar">
+<div id="admin-bar">
   <input id="token" type="password" placeholder="Admin token"/>
-  <button onclick="showAdmin()">Admin panel</button>
+  <button onclick="showAdmin()">Admin</button>
 </div>
 
 <div id="admin-panel">
-  <div class="section-title">Admin</div>
-
-  <div class="admin-actions">
-    <button class="action-btn primary" onclick="publishNow()">Publish top post</button>
-    <button class="action-btn" onclick="loadPending()">Refresh queue</button>
+  <div class="adm-row">
+    <button class="primary" onclick="publishNow()">Publish top post</button>
+    <button onclick="loadPending()">Refresh</button>
   </div>
-
-  <textarea id="custom-text" rows="3" placeholder="Kanalga custom post matni..."></textarea>
-  <button class="action-btn" onclick="postCustom()">Post custom</button>
-
+  <textarea id="custom-text" rows="3" placeholder="Kanalga custom post..."></textarea>
+  <button onclick="postCustom()">Post custom</button>
   <div id="status"></div>
-
-  <div class="section-title" style="margin-top:4px">Pending queue</div>
+  <div class="p-section">Pending queue</div>
   <div id="pending-list"><div class="empty">Yuklanmoqda...</div></div>
 </div>
 
-<!-- Public feed -->
-<div id="feed-title">So'nggi yangiliklar</div>
 <div id="list"><div class="empty">Yuklanmoqda...</div></div>
 
 <script>
@@ -95,31 +82,21 @@ const SOURCE_MAP = {
   'replicate.com':'Replicate','take.surf':'take.surf','ntik.me':'Nick Tikhonov',
 };
 
-function sourceName(url) {
+function srcName(url) {
   try {
     const host = new URL(url).hostname.replace(/^www\./, '');
     if (SOURCE_MAP[host]) return SOURCE_MAP[host];
     const parts = host.split('.');
     const base = parts.length >= 2 ? parts.at(-2) : host;
-    return base.split(/[-._]+/).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+    return base.split(/[-._]+/).map(p => p[0].toUpperCase() + p.slice(1)).join(' ');
   } catch { return 'Manba'; }
 }
 
 function fmtDate(s) {
   if (!s) return '';
   const d = new Date(s);
-  return isNaN(d) ? '' : d.toLocaleDateString('ru', {day:'2-digit',month:'short',year:'numeric'});
-}
-
-function renderTldr(raw) {
-  if (!raw) return '<span style="color:#90a0b5;font-style:italic">TL;DR yo\'q</span>';
-  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  const lead = lines[0].startsWith('– ') ? null : lines[0];
-  const bullets = lines.filter(l => l.startsWith('– '));
-  let html = '';
-  if (lead) html += `<div class="card-lead">${esc(lead)}</div>`;
-  if (bullets.length) html += `<div class="card-bullets">${bullets.map(l => `<div>${esc(l)}</div>`).join('')}</div>`;
-  return html || `<div class="card-bullets">${lines.map(l=>`<div>${esc(l)}</div>`).join('')}</div>`;
+  if (isNaN(d)) return '';
+  return d.toLocaleDateString('ru', {day:'2-digit',month:'short'});
 }
 
 function esc(s) {
@@ -127,93 +104,73 @@ function esc(s) {
 }
 
 function adminHeaders() {
-  return {'content-type':'application/json','x-admin-token': document.getElementById('token').value.trim()};
+  return {'content-type':'application/json','x-admin-token':document.getElementById('token').value.trim()};
 }
-
-function setStatus(msg) {
-  document.getElementById('status').textContent = msg;
-}
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
 
 // Feed
-fetch('/api/news').then(r => r.json()).then(rows => {
+fetch('/api/news').then(r=>r.json()).then(rows=>{
   const el = document.getElementById('list');
-  if (!rows.length) { el.innerHTML = '<div class="empty">Hozircha yangiliklar yo\'q</div>'; return; }
+  if (!rows.length) { el.innerHTML='<div class="empty">Hozircha yangiliklar yo\'q</div>'; return; }
   el.innerHTML = rows.map(x => {
-    const src = sourceName(x.url || x.source_url || '');
-    const date = fmtDate(x.published_at);
+    const src = srcName(x.url || x.source_url || '');
     const title = esc(x.title_uz || x.title || '');
-    return `<div class="card">
-      <div class="card-meta">${esc(src)}${date ? ' · ' + date : ''}</div>
-      <div class="card-title"><a href="${esc(x.url)}" target="_blank">${title}</a></div>
-      ${renderTldr(x.tldr_uz)}
-      <div class="card-footer"><a href="/news/${x.id}">Batafsil</a></div>
-    </div>`;
+    const tldr = esc(x.tldr_uz || '').trim();
+    const date = fmtDate(x.published_at);
+    return `<div class="msg">
+  <div class="msg-head"><span class="src"><a href="${esc(x.url)}" target="_blank">${esc(src)}</a></span>: ${title}</div>
+  <div class="msg-body">${tldr}</div>
+  <div class="msg-foot"><a href="https://t.me/changal_24" target="_blank">Changal24</a>${date ? `<span class="date">${date}</span>` : ''}</div>
+</div>`;
   }).join('');
-}).catch(() => {
-  document.getElementById('list').innerHTML = '<div class="empty">Xato: yangiliklar yuklanmadi</div>';
+}).catch(()=>{
+  document.getElementById('list').innerHTML='<div class="empty">Yuklanmadi</div>';
 });
 
 // Admin
 async function showAdmin() {
-  const r = await fetch('/api/admin/pending', { headers: adminHeaders() });
-  if (r.status === 401) { setStatus('Noto\'g\'ri token'); return; }
-  if (!r.ok) { setStatus('Xato ' + r.status); return; }
-  document.getElementById('admin-panel').style.display = 'block';
+  const r = await fetch('/api/admin/pending',{headers:adminHeaders()});
+  if (r.status===401){setStatus("Noto'g'ri token");return;}
+  if (!r.ok){setStatus('Xato '+r.status);return;}
+  document.getElementById('admin-panel').style.display='block';
   renderPending(await r.json());
 }
-
 async function loadPending() {
-  const r = await fetch('/api/admin/pending', { headers: adminHeaders() });
-  if (!r.ok) return;
-  renderPending(await r.json());
+  const r = await fetch('/api/admin/pending',{headers:adminHeaders()});
+  if (r.ok) renderPending(await r.json());
 }
-
 function renderPending(rows) {
   const el = document.getElementById('pending-list');
-  if (!rows.length) { el.innerHTML = '<div class="empty">Navbat bo\'sh</div>'; return; }
-  el.innerHTML = rows.map(x => {
-    const src = sourceName(x.url || x.source_url || '');
-    return `<div class="pending-card" id="pc-${x.id}">
-      <div class="info">
-        <div class="p-title" title="${esc(x.title || '')}">${esc(x.title || '')}</div>
-        <div class="p-meta">${esc(src)} · score ${Math.round(x.score || 0)}</div>
-      </div>
-      <button class="pub-btn" onclick="publishPost(${x.id}, this)">Publish</button>
-    </div>`;
-  }).join('');
+  if (!rows.length){el.innerHTML='<div class="empty">Navbat bo\'sh</div>';return;}
+  el.innerHTML = rows.map(x=>`<div class="pending-row" id="pc-${x.id}">
+  <div class="pr-info">
+    <div class="pr-title" title="${esc(x.title||'')}">${esc(x.title||'')}</div>
+    <div class="pr-meta">${esc(srcName(x.url||x.source_url||''))} · score ${Math.round(x.score||0)}</div>
+  </div>
+  <button class="pub-btn" onclick="publishPost(${x.id},this)">Publish</button>
+</div>`).join('');
 }
-
 async function publishPost(id, btn) {
-  btn.disabled = true;
-  btn.textContent = '...';
-  setStatus('Publishing #' + id + '...');
-  const r = await fetch('/api/publish-post', { method:'POST', headers: adminHeaders(), body: JSON.stringify({id}) });
-  const j = await r.json().catch(() => ({}));
-  if (r.ok) {
-    setStatus('OK: ' + (j.output || 'published'));
-    document.getElementById('pc-' + id)?.remove();
-  } else {
-    setStatus('ERR: ' + (j.error || r.status));
-    btn.disabled = false;
-    btn.textContent = 'Publish';
-  }
+  btn.disabled=true; btn.textContent='...'; setStatus('Publishing #'+id+'...');
+  const r = await fetch('/api/publish-post',{method:'POST',headers:adminHeaders(),body:JSON.stringify({id})});
+  const j = await r.json().catch(()=>({}));
+  if (r.ok){setStatus('OK: '+(j.output||'published')); document.getElementById('pc-'+id)?.remove();}
+  else{setStatus('ERR: '+(j.error||r.status)); btn.disabled=false; btn.textContent='Publish';}
 }
-
 async function publishNow() {
   setStatus('Publishing...');
-  const r = await fetch('/api/publish-now', { method:'POST', headers: adminHeaders() });
-  const j = await r.json().catch(() => ({}));
-  setStatus(r.ok ? 'OK: ' + (j.output || 'published') : 'ERR: ' + (j.error || r.status));
+  const r = await fetch('/api/publish-now',{method:'POST',headers:adminHeaders()});
+  const j = await r.json().catch(()=>({}));
+  setStatus(r.ok?'OK: '+(j.output||'published'):'ERR: '+(j.error||r.status));
   if (r.ok) loadPending();
 }
-
 async function postCustom() {
   const text = document.getElementById('custom-text').value.trim();
   if (!text) return;
   setStatus('Sending...');
-  const r = await fetch('/api/post-custom', { method:'POST', headers: adminHeaders(), body: JSON.stringify({text}) });
-  const j = await r.json().catch(() => ({}));
-  setStatus(r.ok ? 'OK: sent' : 'ERR: ' + (j.error || r.status));
+  const r = await fetch('/api/post-custom',{method:'POST',headers:adminHeaders(),body:JSON.stringify({text})});
+  const j = await r.json().catch(()=>({}));
+  setStatus(r.ok?'OK: sent':'ERR: '+(j.error||r.status));
 }
 </script>
 </body>
