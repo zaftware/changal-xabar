@@ -11,6 +11,8 @@ npm run publish
 npm run start
 ```
 
+`publish` uses the local `claude` CLI with your Claude Code subscription login for TL;DR generation.
+
 ## Deploy target
 - `news.zaff.me` (public) for web dashboard
 - Telegram channel posting via bot token
